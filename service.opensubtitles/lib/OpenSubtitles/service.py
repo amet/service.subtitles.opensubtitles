@@ -123,6 +123,24 @@ def hashFile(file_path):
     returnHash = "%016x" % hash
     return filesize,returnHash
 
+
+######## Standard Search function ###########
+# 'item' has everything thats needed for search parameters, look in script.subtitles.main/gui.py for detailed info
+# below list might be incomplete
+#
+#    self.item['sub_folder']
+#    self.item['year']
+#    self.item['season']
+#    self.item['episode']
+#    self.item['mansearch']
+#    self.item['parsearch']
+#    self.item['tmp_sub_dir']
+#    self.item['tvshow']
+#    self.item['title']
+#    self.item['file_original_path']
+# anything needed for download can be saved here and later retreived in 'download_subtitles' function
+#############################################
+
 def search_subtitles( item ):
   ok = False
   hash_search = False
@@ -160,8 +178,29 @@ def search_subtitles( item ):
   log( __name__ ,"Search by hash and name %s" % (os.path.basename( item['file_original_path'] ),))
   item['subtitles_list'], item['msg'] = OSDBServer().searchsubtitles( OS_search_string, item['3let_language'], hash_search, SubHash, file_size  )
 
+# 2 below items need to be returned to main script
+# item['subtitles_list'] list of all subtitles found, needs to include below items. see searchsubtitles above for more info
+#                        "language_name"
+#                        "filename"
+#                        "rating"
+#                        "language_flag"
+# item['msg'] message notifying user of any errors
+
   return item
 
+######## Standard Download function ###########
+# as per search_subtitles explanation
+#
+# 3 below items are needed as a result
+# item['zipped']   - is subtitle in zip?
+# item['file']     - file where unzipped subtitle is saved ,
+#                    main script will remame it and copy to 
+#                    correct location(will be ignored if item['zipped'] is true
+# item['language'] - language of the subtitle file. 
+#                    it can be Full language name, 2 letter(ISO 639-1) or 3 letter(ISO 639-2)
+#                    e.g English or en or eng
+#                    e.g Serbian or sr or scc
+###############################################
 def download_subtitles (item):
   item['file'] = os.path.join(item['tmp_sub_dir'], "%s.srt" % item['subtitles_list'][item['pos']][ "ID" ])
   result = OSDBServer().download(item['subtitles_list'][item['pos']][ "ID" ], item['file'])
