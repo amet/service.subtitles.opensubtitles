@@ -5,6 +5,7 @@
        provider-name="amet">
   <requires>
     <import addon="xbmc.python" version="2.1"/>
+    <import addon="script.subtitles.main" version="4.0.0"/>
   </requires>
   <extension point="xbmc.python.subtitles"
              library="service.py" />
