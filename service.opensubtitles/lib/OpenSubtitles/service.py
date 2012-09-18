@@ -35,20 +35,14 @@ class OSDBServer:
     lang_index               = 3
     searchlist               = []
     self.subtitles_hash_list = []
-    search_language          = languages[0]
-    
-    if languages[0] != languages[1]:
-      search_language += "," + languages[1]
-    if languages[2] != languages[0] and languages[2] != languages[1]:
-      search_language += "," + languages[2]
   
     log( __name__ ,"Token:[%s]" % str(self.osdb_token))
   
     try:
       if ( self.osdb_token ) :
         if hash_search:
-          searchlist.append({'sublanguageid':search_language, 'moviehash':_hash, 'moviebytesize':str( size ) })
-        searchlist.append({'sublanguageid':search_language, 'query':srch_string })
+          searchlist.append({'sublanguageid':','.join(languages), 'moviehash':_hash, 'moviebytesize':str( size ) })
+        searchlist.append({'sublanguageid':','.join(languages), 'query':srch_string })
         search = self.server.SearchSubtitles( self.osdb_token, searchlist )
         if search["data"]:
           for item in search["data"]:
@@ -130,7 +124,6 @@ def hashFile(file_path):
     return filesize,returnHash
 
 def search_subtitles( item ):
-  print item
   ok = False
   hash_search = False
   if len(item['tvshow']) > 0:                                            # TvShow
@@ -169,7 +162,6 @@ def search_subtitles( item ):
 
   return item
 
-
 def download_subtitles (item):
   item['file'] = os.path.join(item['tmp_sub_dir'], "%s.srt" % item['subtitles_list'][item['pos']][ "ID" ])
   result = OSDBServer().download(item['subtitles_list'][item['pos']][ "ID" ], item['file'])
@@ -183,6 +175,3 @@ def download_subtitles (item):
   item['language'] = item['subtitles_list'][item['pos']][ "language_name" ]
   
   return item    
-    
-    
-    
