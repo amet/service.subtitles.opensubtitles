@@ -128,12 +128,12 @@ def hashFile(file_path):
 # 'item' has everything thats needed for search parameters, look in script.subtitles.main/gui.py for detailed info
 # below list might be incomplete
 #
-#    self.item['file_original_path']
-#    self.item['year']
-#    self.item['season']
-#    self.item['episode']
-#    self.item['tvshow']
-#    self.item['title']
+#    item['file_original_path']
+#    item['year']
+#    item['season']
+#    item['episode']
+#    item['tvshow']
+#    item['title']
 # anything needed for download can be saved here and later retreived in 'download_subtitles' function
 #############################################
 
