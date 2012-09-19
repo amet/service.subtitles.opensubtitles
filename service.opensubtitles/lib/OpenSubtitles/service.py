@@ -28,16 +28,13 @@ class OSDBServer:
           self.subtitles_list.append( item )
 
     if( len ( self.subtitles_list ) > 0 ):
-      self.subtitles_list.sort(key=lambda x: [not x['sync'],x['lang_index']])
+      self.subtitles_list.sort(key=lambda x: [not x['sync'],x['language_name']])
 
   def searchsubtitles( self, srch_string, languages, hash_search, _hash = "000000000", size = "000000000"):
     msg                      = ""
-    lang_index               = 3
     searchlist               = []
     self.subtitles_hash_list = []
-  
-    log( __name__ ,"Token:[%s]" % str(self.osdb_token))
-  
+    
     try:
       if ( self.osdb_token ) :
         if hash_search:
@@ -46,31 +43,13 @@ class OSDBServer:
         search = self.server.SearchSubtitles( self.osdb_token, searchlist )
         if search["data"]:
           for item in search["data"]:
-            if item["ISO639"]:
-              lang_index=0
-              for user_lang_id in languages:
-                if user_lang_id == item["ISO639"]:
-                  break
-                lang_index+=1
-              flag_image = "flags/%s.gif" % item["ISO639"]
-            else:                                
-              flag_image = "-.gif"
-
-            if str(item["MatchedBy"]) == "moviehash":
-              sync = True
-            else:                                
-              sync = False
-
-            self.subtitles_hash_list.append({'lang_index'    : lang_index,
-                                             'filename'      : item["SubFileName"],
+            self.subtitles_hash_list.append({'filename'      : item["SubFileName"],
                                              'link'          : item["ZipDownloadLink"],
                                              'language_name' : item["LanguageName"],
-                                             'language_flag' : flag_image,
-                                             'language_id'   : item["SubLanguageID"],
                                              'ID'            : item["IDSubtitleFile"],
-                                             'rating'        : str(int(item["SubRating"][0])),
+                                             'rating'        : "%.1d" % float(item["SubRating"]),
                                              'format'        : item["SubFormat"],
-                                             'sync'          : sync,
+                                             'sync'          : str(item["MatchedBy"]) == "moviehash",
                                              'hearing_imp'   : int(item["SubHearingImpaired"]) != 0
                                              })
             
@@ -179,7 +158,6 @@ def search_subtitles( item ):
 #                        "language_name"
 #                        "filename"
 #                        "rating"
-#                        "language_flag"
 # item['msg'] message notifying user of any errors
 
   return item
@@ -198,11 +176,11 @@ def search_subtitles( item ):
 #                    e.g Serbian or sr or scc
 ###############################################
 def download_subtitles (item):
-  item['file'] = os.path.join(item['tmp_sub_dir'], "%s.srt" % item['subtitles_list'][item['pos']][ "ID" ])
+  item['file'] = os.path.join(item['tmp_sub_dir'], "%s.%s" % (item['subtitles_list'][item['pos']][ "ID" ], item['subtitles_list'][item['pos']][ "format" ]))
   result = OSDBServer().download(item['subtitles_list'][item['pos']][ "ID" ], item['file'])
   if not result:
     import urllib
-    log( __name__,"Download Using http://")
+    log( __name__,"Download Using HTTP")
     urllib.urlretrieve(item['subtitles_list'][item['pos']][ "link" ],item['zip_subs'])  
   else:
     log( __name__,"Download Using XMLRPC")
