@@ -43,7 +43,6 @@ class OSDBServer:
         search = self.server.SearchSubtitles( self.osdb_token, searchlist )
         if search["data"]:
           for item in search["data"]:
-            print item["LanguageName"], item["IDSubtitleFile"], item["SubSumCD"], item["ZipDownloadLink"]
             self.subtitles_hash_list.append({'filename'      : item["SubFileName"],
                                              'link'          : item["ZipDownloadLink"],
                                              'language'      : item["LanguageName"],
@@ -105,6 +104,50 @@ def hashFile(file_path):
     return filesize,returnHash
 
 
+def OpensubtitlesHashRar(firsrarfile):
+    f = xbmcvfs.File(firsrarfile)
+    a=f.read(4)
+    if a!='Rar!':
+        raise Exception('ERROR: This is not rar file.')
+    seek=0
+    for i in range(4):
+        f.seek(max(0,seek),0)
+        a=f.read(100)        
+        type,flag,size=struct.unpack( '<BHH', a[2:2+5]) 
+        if 0x74==type:
+            if 0x30!=struct.unpack( '<B', a[25:25+1])[0]:
+                raise Exception('Bad compression method! Work only for "store".')            
+            s_partiizebodystart=seek+size
+            s_partiizebody,s_unpacksize=struct.unpack( '<II', a[7:7+2*4])
+            if (flag & 0x0100):
+                s_unpacksize=(unpack( '<I', a[36:36+4])[0] <<32 )+s_unpacksize
+                log( __name__ , 'Hash untested for files biger that 2gb. May work or may generate bad hash.')
+            lastrarfile=getlastsplit(firsrarfile,(s_unpacksize-1)/s_partiizebody)
+            hash=addfilehash(firsrarfile,s_unpacksize,s_partiizebodystart)
+            hash=addfilehash(lastrarfile,hash,(s_unpacksize%s_partiizebody)+s_partiizebodystart-65536)
+            f.close()
+            return (s_unpacksize,"%016x" % hash )
+        seek+=size
+    raise Exception('ERROR: Not Body part in rar file.')
+
+def getlastsplit(firsrarfile,x):
+    if firsrarfile[-3:]=='001':
+        return firsrarfile[:-3]+('%03d' %(x+1))
+    if firsrarfile[-11:-6]=='.part':
+        return firsrarfile[0:-6]+('%02d' % (x+1))+firsrarfile[-4:]
+    if firsrarfile[-10:-5]=='.part':
+        return firsrarfile[0:-5]+('%1d' % (x+1))+firsrarfile[-4:]
+    return firsrarfile[0:-2]+('%02d' %(x-1) )
+
+def addfilehash(name,hash,seek):
+    f = xbmcvfs.File(name)
+    f.seek(max(0,seek),0)
+    for i in range(8192):
+        hash+=struct.unpack('<q', f.read(8))[0]
+        hash =hash & 0xffffffffffffffff
+    f.close()    
+    return hash
+
 ######## Standard Search function ###########
 # 'item' has everything thats needed for search parameters, look in script.subtitles.main/gui.py for detailed info
 # below list might be incomplete
@@ -140,7 +183,10 @@ def Search( item ):
     SubHash     = "000000000000"
   else:
     try:
-      file_size, SubHash   = hashFile(item['file_original_path'])
+      if item['rar']:
+        file_size, SubHash   = OpensubtitlesHashRar(item['file_original_path'])
+      else:
+        file_size, SubHash   = hashFile(item['file_original_path'])
       log( __name__ ,"xbmc module hash and size")
       hash_search = True
     except:  
@@ -167,7 +213,13 @@ def Search( item ):
 ######## Standard Download function ###########
 # as per search_subtitles explanation
 #
-# we need to return list of subtitles main
+# we need to return list of subtitles to main script, if list contains more than one subtitle file,
+#  it needs to be sorted so that CD1 is first, CD2 second...
+# list of subtitles can be:
+#                           download url for subtitle(uncompressed),
+#                           local file,
+#                           network file(smb, nfs, afp),
+#                           file in zip or rar archive(path/to/zip.zip/subtitle_file.srt)
 ###############################################
 def Download(item):
   subtitle_list = []
