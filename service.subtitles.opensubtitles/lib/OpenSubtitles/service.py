@@ -116,7 +116,7 @@ def hashFile(file_path):
 # anything needed for download can be saved here and later retreived in 'download_subtitles' function
 #############################################
 
-def search_subtitles( item ):
+def Search( item ):
   ok = False
   hash_search = False
   if len(item['tvshow']) > 0:                                            # TvShow
@@ -175,7 +175,7 @@ def search_subtitles( item ):
 #                    e.g English or en or eng
 #                    e.g Serbian or sr or scc
 ###############################################
-def download_subtitles (item):
+def Download(item):
   item['file'] = os.path.join(item['tmp_sub_dir'], "%s.%s" % (item['subtitles_list'][item['pos']][ "ID" ], item['subtitles_list'][item['pos']][ "format" ]))
   result = OSDBServer().download(item['subtitles_list'][item['pos']][ "ID" ], item['file'])
   if not result:
