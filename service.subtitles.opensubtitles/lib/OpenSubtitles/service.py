@@ -28,7 +28,7 @@ class OSDBServer:
           self.subtitles_list.append( item )
 
     if( len ( self.subtitles_list ) > 0 ):
-      self.subtitles_list.sort(key=lambda x: [not x['sync'],x['language_name']])
+      self.subtitles_list.sort(key=lambda x: [not x['sync'],x['language']])
 
   def searchsubtitles( self, srch_string, languages, hash_search, _hash = "000000000", size = "000000000"):
     msg                      = ""
@@ -43,9 +43,10 @@ class OSDBServer:
         search = self.server.SearchSubtitles( self.osdb_token, searchlist )
         if search["data"]:
           for item in search["data"]:
+            print item["LanguageName"], item["IDSubtitleFile"], item["SubSumCD"], item["ZipDownloadLink"]
             self.subtitles_hash_list.append({'filename'      : item["SubFileName"],
                                              'link'          : item["ZipDownloadLink"],
-                                             'language_name' : item["LanguageName"],
+                                             'language'      : item["LanguageName"],
                                              'ID'            : item["IDSubtitleFile"],
                                              'rating'        : "%.1d" % float(item["SubRating"]),
                                              'format'        : item["SubFormat"],
@@ -70,6 +71,7 @@ class OSDBServer:
          data = d.decompress(base64.b64decode(result["data"][0]["data"]))
          local_file.write(data)
          local_file.close()
+         log( __name__,"Download Using XMLRPC")
          return True
        return False
      except:
@@ -155,7 +157,7 @@ def Search( item ):
 
 # 2 below items need to be returned to main script
 # item['subtitles_list'] list of all subtitles found, needs to include below items. see searchsubtitles above for more info
-#                        "language_name"
+#                        "language"
 #                        "filename"
 #                        "rating"
 # item['msg'] message notifying user of any errors
@@ -165,26 +167,33 @@ def Search( item ):
 ######## Standard Download function ###########
 # as per search_subtitles explanation
 #
-# 3 below items are needed as a result
-# item['zipped']   - is subtitle in zip?
-# item['file']     - file where unzipped subtitle is saved ,
-#                    main script will remame it and copy to 
-#                    correct location(will be ignored if item['zipped'] is true
-# item['language'] - language of the subtitle file. 
-#                    it can be Full language name, 2 letter(ISO 639-1) or 3 letter(ISO 639-2)
-#                    e.g English or en or eng
-#                    e.g Serbian or sr or scc
+# we need to return list of subtitles main
 ###############################################
 def Download(item):
-  item['file'] = os.path.join(item['tmp_sub_dir'], "%s.%s" % (item['subtitles_list'][item['pos']][ "ID" ], item['subtitles_list'][item['pos']][ "format" ]))
-  result = OSDBServer().download(item['subtitles_list'][item['pos']][ "ID" ], item['file'])
-  if not result:
-    import urllib
-    log( __name__,"Download Using HTTP")
-    urllib.urlretrieve(item['subtitles_list'][item['pos']][ "link" ],item['zip_subs'])  
+  subtitle_list = []
+  exts = [".srt", ".sub", ".txt", ".smi", ".ssa", ".ass" ]
+  if item['stack']: ## we only want XMLRPC download if movie is not in stack, you can only retreive multiple subs in zip
+    result = False
   else:
-    log( __name__,"Download Using XMLRPC")
-  item['zipped'] = not result
-  item['language'] = item['subtitles_list'][item['pos']][ "language_name" ]
-  
-  return item    
+    subtitle = os.path.join(item['tmp_sub_dir'], item['subtitles_list'][item['pos']][ "filename" ])
+    result = OSDBServer().download(item['subtitles_list'][item['pos']][ "ID" ], subtitle)
+  if not result:
+    log( __name__,"Download Using HTTP")
+    zip = os.path.join( item['tmp_sub_dir'], "OpenSubtitles.zip")
+    f = urllib.urlopen(item['subtitles_list'][item['pos']][ "link" ])
+    with open(zip, "wb") as subFile:
+      subFile.write(f.read())
+    subFile.close()
+    xbmc.sleep(500)
+    xbmc.executebuiltin(('XBMC.Extract("%s","%s")' % (zip,item['tmp_sub_dir'],)).encode('utf-8'), True)
+    for file in xbmcvfs.listdir(zip)[1]:
+      file = os.path.join(item['tmp_sub_dir'], file)
+      if (os.path.splitext( file )[1] in exts):
+        subtitle_list.append(file)
+  else:
+    subtitle_list.append(subtitle)
+    
+  if xbmcvfs.exists(subtitle_list[0]):
+    return subtitle_list
+    
+    
