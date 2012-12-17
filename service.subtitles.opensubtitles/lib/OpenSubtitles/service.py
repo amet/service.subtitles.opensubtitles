@@ -9,7 +9,7 @@ import xbmcaddon
 
 from OSUtilities import OSDBServer, log, hashFile
 
-__addon__ = xbmcaddon.Addon('service.subtitles.opensubtitles')
+__addon__ = xbmcaddon.Addon()
 
 ######## Standard Search function ###########
 # 'item' has everything thats needed for search parameters, look in script.subtitles.main/gui.py for detailed info
