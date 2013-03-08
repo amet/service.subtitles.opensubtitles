@@ -10,7 +10,7 @@ import xbmcaddon
 
 __addon__      = xbmcaddon.Addon()
 __version__    = __addon__.getAddonInfo('version') # Module version
-__scriptname__ = sys.modules[ "__main__" ].__scriptname__ # Main Script name
+__scriptname__ = "XBMC Subtitles"
 
 BASE_URL_XMLRPC = u"http://api.opensubtitles.org/xml-rpc"
 
