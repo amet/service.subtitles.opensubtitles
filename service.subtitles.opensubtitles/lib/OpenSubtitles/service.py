@@ -25,9 +25,6 @@ __addon__ = xbmcaddon.Addon()
 #############################################
 
 def Search( item ):
-  item['msg'] = ""
-    
- 
   search_data = OSDBServer().searchsubtitles(item)
 
   if search_data != None:
@@ -41,10 +38,12 @@ def Search( item ):
                                       'sync'          : str(item_data["MatchedBy"]) == "moviehash",
                                       'hearing_imp'   : int(item_data["SubHearingImpaired"]) != 0
                                       })
-  else:                                    
+    item['subtitles_list'].sort(key=lambda x: [not x['sync'],x['language']])
+    item['msg'] = ""
+  else:
     item['msg'] = __addon__.getLocalizedString(610)
-    
-  item['subtitles_list'].sort(key=lambda x: [not x['sync'],x['language']])  
+    item['subtitles_list']=[]
+
 # item['subtitles_list'] needs to be returned to main script
 # list of all subtitles found, needs to include below items. see searchsubtitles above for more info
 #                        "language"
