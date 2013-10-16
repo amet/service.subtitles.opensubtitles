@@ -5,10 +5,9 @@
        provider-name="amet">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
-    <import addon="script.subtitles.ui" version="5.0.0"/>
   </requires>
   <extension point="xbmc.subtitle.module"
-             library="lib" />
+             library="service.py" />
   <extension point="xbmc.addon.metadata">
     <summary lang="en">OpenSubtitles</summary>
     <description lang="en">Search and download subtitles from OpenSubtitles</description>

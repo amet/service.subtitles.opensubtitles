@@ -7,6 +7,7 @@ import struct
 import xbmcvfs
 import xmlrpclib
 import xbmcaddon
+import unicodedata
 
 __addon__      = xbmcaddon.Addon()
 __version__    = __addon__.getAddonInfo('version') # Module version
@@ -39,14 +40,14 @@ class OSDBServer:
         try:
           size, hash = hashFile(item['file_original_path'], item['rar'])
           log( __name__ ,"OpenSubtitles module hash [%s] and size [%s]" % (hash, size,))
-          searchlist.append({'sublanguageid' :','.join(item['3let_language']),
+          searchlist.append({'sublanguageid' :",".join(item['3let_language']),
                               'moviehash'    :hash,
                               'moviebytesize':str(size)
                               })
         except:
           pass    
 
-      searchlist.append({'sublanguageid':','.join(item['3let_language']),
+      searchlist.append({'sublanguageid':",".join(item['3let_language']),
                           'query'       :OS_search_string
                         })
       search = self.server.SearchSubtitles( self.osdb_token, searchlist )
@@ -147,3 +148,8 @@ def addfilehash(name,hash,seek):
         hash =hash & 0xffffffffffffffff
     f.close()    
     return hash
+
+def normalizeString(str):
+  return unicodedata.normalize(
+         'NFKD', unicode(unicode(str, 'utf-8'))
+         ).encode('ascii','ignore')
