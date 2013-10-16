@@ -143,7 +143,6 @@ print params
 
 
 if params['action'] == 'search':
-  print urllib.unquote(params['languages']).decode('utf-8')
   log( __name__, "action 'search' called")
   item = {}
   item['temp']               = False
@@ -154,7 +153,10 @@ if params['action'] == 'search':
   item['tvshow']             = normalizeString(xbmc.getInfoLabel("VideoPlayer.TVshowtitle"))  # Show
   item['title']              = normalizeString(xbmc.getInfoLabel("VideoPlayer.OriginalTitle"))# try to get original title
   item['file_original_path'] = urllib.unquote(xbmc.Player().getPlayingFile().decode('utf-8'))# Full path of a playing file
-  item['3let_language']      = ['scc','eng']
+  item['3let_language']      = [] #['scc','eng']
+  
+  for lang in urllib.unquote(params['languages']).decode('utf-8').split(","):
+    item['3let_language'].append(xbmc.convertLanguage(lang,xbmc.ISO_639_2))
   
   if item['title'] == "":
     log( __name__, "VideoPlayer.OriginalTitle not found")
