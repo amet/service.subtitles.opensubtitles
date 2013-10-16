@@ -182,7 +182,7 @@ elif params['action'] == 'download':
   subs = Download(par["ID"],par["link"],par["filename"])
   for sub in subs:
     listitem = xbmcgui.ListItem(label=sub)
-    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url="",listitem=listitem,isFolder=False)
+    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=sub,listitem=listitem,isFolder=False)
   
   
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
