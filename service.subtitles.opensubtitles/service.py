@@ -116,11 +116,14 @@ def Download(id,url,filename, stack=False):
     return subtitle_list
     
  
-def get_params():
+def get_params(string=""):
   param=[]
-  paramstring=sys.argv[2]
+  if string == "":
+    paramstring=sys.argv[2]
+  else:
+    paramstring=string 
   if len(paramstring)>=2:
-    params=sys.argv[2]
+    params=paramstring
     cleanedparams=params.replace('?','')
     if (params[len(params)-1]=='/'):
       params=params[0:len(params)-2]
@@ -138,7 +141,9 @@ params = get_params()
 
 print params
 
+
 if params['action'] == 'search':
+  print urllib.unquote(params['languages']).decode('utf-8')
   log( __name__, "action 'search' called")
   item = {}
   item['temp']               = False
@@ -173,7 +178,8 @@ if params['action'] == 'search':
   Search(item)  
 
 elif params['action'] == 'download':
-  subs = Download(params["ID"],params["link"],params["filename"])
+  par = get_params(urllib.unquote(params['property']).decode('utf-8'))
+  subs = Download(par["ID"],par["link"],par["filename"])
   for sub in subs:
     listitem = xbmcgui.ListItem(label=sub)
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url="",listitem=listitem,isFolder=False)
