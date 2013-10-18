@@ -81,10 +81,11 @@ def Search( item ):
         listitem.setProperty( "hearing_imp", "true" )
       else:
         listitem.setProperty( "hearing_imp", "false" )
-        
-      listitem.setProperty( "Download", "&link=%s&ID=%s&filename=%s" % (it["link"], it["ID"],it[ "filename" ]) )
       
-      xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url="",listitem=listitem,isFolder=False)
+      url = "plugin://%s/?action=download&link=%s&ID=%s&filename=%s" % (__scriptid__, it["link"], 
+it["ID"],it["filename"])
+      
+      xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=listitem,isFolder=False)
 
 
 def Download(id,url,filename, stack=False):
@@ -180,8 +181,7 @@ if params['action'] == 'search':
   Search(item)  
 
 elif params['action'] == 'download':
-  par = get_params(urllib.unquote(params['property']).decode('utf-8'))
-  subs = Download(par["ID"],par["link"],par["filename"])
+  subs = Download(params["ID"],params["link"],params["filename"])
   for sub in subs:
     listitem = xbmcgui.ListItem(label=sub)
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=sub,listitem=listitem,isFolder=False)
