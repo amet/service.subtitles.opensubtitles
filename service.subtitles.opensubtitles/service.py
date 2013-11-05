@@ -57,7 +57,7 @@ def Search( item ):
                               'language_flag' : flag_image,
                               'language_id'   : item_data["SubLanguageID"],
                               'ID'            : item_data["IDSubtitleFile"],
-                              'rating'        : str(int(round(int(item_data["SubRating"][0])/2))),
+                              'rating'        : str(int(round(float(item_data["SubRating"])/2))),
                               'format'        : item_data["SubFormat"],
                               'sync'          : sync,
                               'hearing_imp'   : int(item_data["SubHearingImpaired"]) != 0
