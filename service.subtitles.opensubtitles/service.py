@@ -32,7 +32,7 @@ def Search( item ):
     search_data = OSDBServer().searchsubtitles(item)
   except:
     log( __name__, "failed to connect to service for subtitle search")
-    xbmc.executebuiltin((u'Notification(%s,%s)' % (__scriptname__ , __language__(610))).encode('utf-8'))
+    xbmc.executebuiltin((u'Notification(%s,%s)' % (__scriptname__ , __language__(32001))).encode('utf-8'))
     return
   subtitles_list = []
 
