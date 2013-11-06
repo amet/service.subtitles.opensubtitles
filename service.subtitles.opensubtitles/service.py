@@ -28,8 +28,12 @@ sys.path.append (__resource__)
 from OSUtilities import OSDBServer, log, hashFile, normalizeString
 
 def Search( item ):
-  search_data = OSDBServer().searchsubtitles(item)
-
+  try:
+    search_data = OSDBServer().searchsubtitles(item)
+  except:
+    log( __name__, "failed to connect to service for subtitle search")
+    xbmc.executebuiltin((u'Notification(%s,%s)' % (__scriptname__ , __language__(610))).encode('utf-8'))
+    return
   subtitles_list = []
 
   if search_data != None:
@@ -96,7 +100,11 @@ def Download(id,url,filename, stack=False):
     result = False
   else:
     subtitle = os.path.join(__temp__,filename)
-    result = OSDBServer().download(id, subtitle)
+    try:
+      result = OSDBServer().download(id, subtitle)
+    except:
+      log( __name__, "failed to connect to service for subtitle download")
+      return subtitle_list
   if not result:
     log( __name__,"Download Using HTTP")
     zip = os.path.join( __temp__, "OpenSubtitles.zip")
