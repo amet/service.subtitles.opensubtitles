@@ -47,8 +47,6 @@ def Search( item ):
         flag_image = "%s.gif" % item_data["ISO639"]
       else:                                
         flag_image = "-.gif"
-
-      print flag_image
       if str(item_data["MatchedBy"]) == "moviehash":
         sync = True
       else:                                
@@ -147,9 +145,6 @@ def get_params(string=""):
   return param
 
 params = get_params()
-
-print params
-
 
 if params['action'] == 'search':
   log( __name__, "action 'search' called")
