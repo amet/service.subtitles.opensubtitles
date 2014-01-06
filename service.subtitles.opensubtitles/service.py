@@ -157,7 +157,7 @@ if params['action'] == 'search' or params['action'] == 'manualsearch':
   item['file_original_path'] = urllib.unquote(xbmc.Player().getPlayingFile().decode('utf-8'))# Full path of a playing file
   item['3let_language']      = [] #['scc','eng']
   
-  if params['action'] == 'manualsearch':
+  if 'searchstring' in params:
     item['mansearch'] = True
     item['mansearchstr'] = params['searchstring']     
   
