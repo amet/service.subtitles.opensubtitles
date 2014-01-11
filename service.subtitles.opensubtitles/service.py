@@ -63,7 +63,7 @@ def Download(id,url,filename, stack=False):
                     ## you can only retreive multiple subs in zip
     result = False
   else:
-    subtitle = os.path.join(__temp__,filename)
+    subtitle = os.path.join(__temp__,filename.decode("utf-8"))
     try:
       result = OSDBServer().download(id, subtitle)
     except:
