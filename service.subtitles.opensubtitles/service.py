@@ -3,6 +3,7 @@
 import os
 import sys
 import xbmc
+import shutil
 import urllib
 import xbmcvfs
 import xbmcaddon
@@ -20,8 +21,9 @@ __profile__    = xbmc.translatePath( __addon__.getAddonInfo('profile') ).decode(
 __resource__   = xbmc.translatePath( os.path.join( __cwd__, 'resources', 'lib' ) ).decode("utf-8")
 __temp__       = xbmc.translatePath( os.path.join( __profile__, 'temp') ).decode("utf-8")
 
-if not xbmcvfs.exists(__temp__):
-  xbmcvfs.mkdirs(__temp__)
+if xbmcvfs.exists(__temp__):
+  shutil.rmtree(__temp__)
+xbmcvfs.mkdirs(__temp__)
 
 sys.path.append (__resource__)
 
