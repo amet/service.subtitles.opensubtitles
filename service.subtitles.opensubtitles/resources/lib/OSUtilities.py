@@ -45,7 +45,7 @@ class OSDBServer:
           searchlist.append({'sublanguageid' :",".join(item['3let_language']),
                               'moviehash'    :hash,
                               'moviebytesize':str(size)
-                              })
+                            })
         except:
           pass    
 
