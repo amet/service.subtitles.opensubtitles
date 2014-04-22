@@ -124,7 +124,7 @@ def OpensubtitlesHashRar(firsrarfile):
             s_partiizebodystart=seek+size
             s_partiizebody,s_unpacksize=struct.unpack( '<II', a[7:7+2*4])
             if (flag & 0x0100):
-                s_unpacksize=(unpack( '<I', a[36:36+4])[0] <<32 )+s_unpacksize
+                s_unpacksize=(struct.unpack( '<I', a[36:36+4])[0] <<32 )+s_unpacksize
                 log( __name__ , 'Hash untested for files biger that 2gb. May work or may generate bad hash.')
             lastrarfile=getlastsplit(firsrarfile,(s_unpacksize-1)/s_partiizebody)
             hash=addfilehash(firsrarfile,s_unpacksize,s_partiizebodystart)
