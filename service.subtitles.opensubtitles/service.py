@@ -45,6 +45,9 @@ def Search( item ):
 				     not normalizeString(xbmc.getInfoLabel("VideoPlayer.OriginalTitle")).lower() in x['SubFileName'].replace('.',' ').lower(),
 				     not x['LanguageName'] == PreferredSub])
     for item_data in search_data:
+      ## hack to work around issue where Brazilian is not found as language in XBMC
+      if item_data["LanguageName"] == "Brazilian":
+        item_data["LanguageName"] = "Portuguese (Brazil)"
       listitem = xbmcgui.ListItem(label          = item_data["LanguageName"],
                                   label2         = item_data["SubFileName"],
                                   iconImage      = str(int(round(float(item_data["SubRating"])/2))),
