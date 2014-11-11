@@ -49,28 +49,28 @@ class OSDBServer:
                             })
           if not item['tvshow']:
             searchlist.append({'sublanguageid' :",".join(item['3let_language']),
-          			'imdbid'	   :str(xbmc.Player().getVideoInfoTag().getIMDBNumber().replace('tt',''))
-          		       })
+                               'imdbid'        :str(xbmc.Player().getVideoInfoTag().getIMDBNumber().replace('tt',''))
+                              })
         except:
           pass    
 
       if item['mansearch']:
-      	searchlist = [{'sublanguageid':",".join(item['3let_language']),
+        searchlist = [{'sublanguageid':",".join(item['3let_language']),
                        'query'        :OS_search_string
                      }]
-      	search = self.server.SearchSubtitles( self.osdb_token, searchlist )
-      	if search["data"]:
+        search = self.server.SearchSubtitles( self.osdb_token, searchlist )
+        if search["data"]:
           return search["data"]
       else:
-      	search = self.server.SearchSubtitles( self.osdb_token, searchlist )
-      	if search["data"]:
+        search = self.server.SearchSubtitles( self.osdb_token, searchlist )
+        if search["data"]:
           return search["data"] 
-	else: 
-	  searchlist = [{'sublanguageid':",".join(item['3let_language']),
-                	 'query'        :OS_search_string
-                       }]
-      	  search = self.server.SearchSubtitles( self.osdb_token, searchlist )
-      	  if search["data"]:
+        else: 
+          searchlist = [{'sublanguageid':",".join(item['3let_language']),
+                         'query'        :OS_search_string
+                             }]
+          search = self.server.SearchSubtitles( self.osdb_token, searchlist )
+          if search["data"]:
             return search["data"]
 
 
