@@ -11,6 +11,7 @@
   <extension point="xbmc.addon.metadata">
     <summary lang="en">OpenSubtitles</summary>
     <description lang="en">Search and download subtitles from opensubtitles.org</description>
+    <description lang="zh">从 opensubtitles.org 搜索并下载字幕</description>
     <disclaimer lang="en"></disclaimer>
     <platform>all</platform>
     <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
