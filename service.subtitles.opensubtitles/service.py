@@ -48,22 +48,27 @@ def Search( item ):
       ## hack to work around issue where Brazilian is not found as language in XBMC
       if item_data["LanguageName"] == "Brazilian":
         item_data["LanguageName"] = "Portuguese (Brazil)"
-      listitem = xbmcgui.ListItem(label          = item_data["LanguageName"],
-                                  label2         = item_data["SubFileName"],
-                                  iconImage      = str(int(round(float(item_data["SubRating"])/2))),
-                                  thumbnailImage = item_data["ISO639"]
-                                  )
 
-      listitem.setProperty( "sync", ("false", "true")[str(item_data["MatchedBy"]) == "moviehash"] )
-      listitem.setProperty( "hearing_imp", ("false", "true")[int(item_data["SubHearingImpaired"]) != 0] )
-      url = "plugin://%s/?action=download&link=%s&ID=%s&filename=%s&format=%s" % (__scriptid__,
-                                                                        item_data["ZipDownloadLink"],
-                                                                        item_data["IDSubtitleFile"],
-                                                                        item_data["SubFileName"],
-                                                                        item_data["SubFormat"]
-                                                                        )
+      if ((item['season'] == item_data['SeriesSeason'] and
+          item['episode'] == item_data['SeriesEpisode']) or
+          (item['season'] == "" and item['episode'] == "") ## for file search, season and episode == ""
+         ):
+        listitem = xbmcgui.ListItem(label          = item_data["LanguageName"],
+                                    label2         = item_data["SubFileName"],
+                                    iconImage      = str(int(round(float(item_data["SubRating"])/2))),
+                                    thumbnailImage = item_data["ISO639"]
+                                    )
 
-      xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=listitem,isFolder=False)
+        listitem.setProperty( "sync", ("false", "true")[str(item_data["MatchedBy"]) == "moviehash"] )
+        listitem.setProperty( "hearing_imp", ("false", "true")[int(item_data["SubHearingImpaired"]) != 0] )
+        url = "plugin://%s/?action=download&link=%s&ID=%s&filename=%s&format=%s" % (__scriptid__,
+                                                                          item_data["ZipDownloadLink"],
+                                                                          item_data["IDSubtitleFile"],
+                                                                          item_data["SubFileName"],
+                                                                          item_data["SubFormat"]
+                                                                          )
+
+        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=listitem,isFolder=False)
 
 
 def Download(id,url,format,stack=False):
