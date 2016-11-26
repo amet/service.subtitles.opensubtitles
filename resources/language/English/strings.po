@@ -29,3 +29,7 @@ msgstr ""
 msgctxt "#32004"
 msgid "Login Details"
 msgstr ""
+
+msgctxt "#32005"
+msgid "check username/pass or register at opensubtitles.org"
+msgstr ""
