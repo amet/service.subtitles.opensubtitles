@@ -1,4 +1,4 @@
-OpenSubtitles-service
-=====================
+This is no longer being maintained
+-----------------------------------
 
-service.opensubtitles
+Use https://github.com/opensubtitles/service.subtitles.opensubtitles to report any issues you might have
